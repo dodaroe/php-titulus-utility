@@ -1,0 +1,24 @@
+{
+    "name": "unical/php-titulus-utility",
+    "description": "Connettore PHP per il protocollo Titulus (web service SOAP): protocollo in arrivo, in partenza, tra uffici e avvio dell'iter. Pari del connettore Python dj-titulus-utility.",
+    "type": "library",
+    "license": "proprietary",
+    "keywords": ["titulus", "protocollo", "soap", "unical"],
+    "require": {
+        "php": ">=8.1",
+        "ext-dom": "*",
+        "ext-mbstring": "*",
+        "ext-soap": "*"
+    },
+    "suggest": {
+        "ext-zip": "Serve a riconoscere se un file senza estensione è un docx, xlsx, pptx o odt"
+    },
+    "autoload": {
+        "psr-4": {
+            "Unical\\Titulus\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/esegui.php"
+    }
+}
