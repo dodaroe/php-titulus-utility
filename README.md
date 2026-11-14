@@ -153,3 +153,7 @@ Prove senza Composer e senza rete (cliente SOAP finto). Il servizio vero si prov
 - Non c'è il database di configurazione (`ConfigurationWSProtocollo*`): la configurazione e i parametri sono oggetti.
 - Non ci sono ancora le ricevute di ritorno (`WSTitulusMessageBroker`) né la lettura degli allegati (`WSTitulusFileClient`).
 - L'ambiente di collaudo non è un parametro `test=True`: si crea un secondo `ConfigTitulus` col WSDL di collaudo.
+
+## 📄 Licenza
+
+Apache License 2.0: vedi il file [LICENSE](LICENSE).
