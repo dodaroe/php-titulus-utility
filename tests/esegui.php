@@ -131,14 +131,14 @@ foreach ($dom->getElementsByTagName('rif_interno') as $r) {
 }
 prova($rpaSenza !== null && !$rpaSenza->hasAttribute('cod_persona') && $rpaSenza->getAttribute('nome_persona') === 'Mario Rossi', 'RPA senza matricola: nome, ufficio e nessun cod_persona');
 $domM = new DOMDocument();
-$domM->loadXML($g->documento(['rpa_matricola' => '12734'] + $base));
+$domM->loadXML($g->documento(['rpa_matricola' => '99999'] + $base));
 $rpaCon = null;
 foreach ($domM->getElementsByTagName('rif_interno') as $r) {
     if ($r->getAttribute('diritto') === 'RPA') {
         $rpaCon = $r;
     }
 }
-prova($rpaCon !== null && $rpaCon->getAttribute('cod_persona') === '12734' && $rpaCon->getAttribute('nome_persona') === 'Mario Rossi', 'RPA con matricola: porta anche cod_persona');
+prova($rpaCon !== null && $rpaCon->getAttribute('cod_persona') === '99999' && $rpaCon->getAttribute('nome_persona') === 'Mario Rossi', 'RPA con matricola: porta anche cod_persona');
 $xi = $g->documento(['tipo' => 'interno', 'mittente_interno' => ['nome' => 'M', 'uff_nome' => 'U', 'uff_cod' => '1']] + $base);
 $domi = new DOMDocument();
 $domi->loadXML($xi);
