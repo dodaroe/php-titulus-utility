@@ -42,11 +42,13 @@ final class ClienteSoapTitulus implements ClienteTitulus
                 'connection_timeout' => 15,
                 'exceptions' => true,
                 'trace' => false,
-                'cache_wsdl' => WSDL_CACHE_MEMORY,
+                // MAI WSDL_CACHE_MEMORY: con il WSDL rpc/encoded di Titulus4 (Axis 1.4) PHP scrive nella richiesta un namespace corrotto
+                // (memoria già liberata) e alla chiamata successiva il processo va in segfault (verificato con PHP 8.2 e 8.4).
+                'cache_wsdl' => WSDL_CACHE_NONE,
                 'features' => SOAP_SINGLE_ELEMENT_ARRAYS,
             ]);
         } catch (Throwable $e) {
-            throw new RuntimeException('Collegamento a Titulus non riuscito: ' . $this->senzaSegreti($e->getMessage()), 0, $e);
+            throw new RuntimeException('Collegamento a Titulus non riuscito: ' . $this->senzaSegreti($this->spiegaErroreWsdl($e->getMessage(), $auth)), 0, $e);
         }
 
         return $this->soap;
@@ -154,6 +156,34 @@ final class ClienteSoapTitulus implements ClienteTitulus
         }
 
         return $x;
+    }
+
+    /** Il SoapClient dice solo «failed to load external entity»: si rilegge l'indirizzo per dire se è la password, l'indirizzo o il formato. */
+    private function spiegaErroreWsdl(string $messaggio, string $auth): string
+    {
+        $url = $this->config->urlWs;
+        if (preg_match('/^[\s\'"]|[\s\'"]$/', $url)) {
+            return "L'indirizzo ha spazi o apici all'inizio o in fondo: toglili.";
+        }
+        $ctx = stream_context_create(['http' => ['header' => "Authorization: $auth\r\n", 'timeout' => 15, 'ignore_errors' => true]]);
+        $corpo = @file_get_contents($url, false, $ctx, 0, 4096);
+        $stato = 0;
+        foreach ($http_response_header ?? [] as $riga) {
+            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $riga, $m)) {
+                $stato = (int) $m[1];
+            }
+        }
+        if ($stato === 401 || $stato === 403) {
+            return "Titulus non accetta l'utente o la password (risposta $stato). Controlla utente e password: se sono giusti, chiedi all'Ufficio Protocollo di abilitare l'utente al servizio SOAP.";
+        }
+        if ($stato === 404) {
+            return "L'indirizzo non esiste su Titulus (risposta 404): controlla l'indirizzo del servizio.";
+        }
+        if ($stato >= 200 && $stato < 300 && is_string($corpo) && stripos($corpo, 'definitions') === false) {
+            return "L'indirizzo risponde ma non è un WSDL: di solito manca «?wsdl» in fondo all'indirizzo (es. …/services/Titulus4?wsdl).";
+        }
+
+        return $messaggio;
     }
 
     private function senzaSegreti(string $m): string

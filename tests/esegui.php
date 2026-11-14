@@ -232,5 +232,11 @@ prova($rf->numeroAssegnato('convenzione', 5) === '2026-UCALPRG-0001234' && $rf->
 prova(!str_contains((string) file_get_contents($tmp), 'segreta'), 'registro su file: nessuna password');
 @unlink($tmp);
 
+// --- Client SOAP: scelte che non si devono perdere ------------------------------------------------------------------------------
+sezione('Client SOAP');
+$sorgenteSoap = (string) file_get_contents(__DIR__ . '/../src/ClienteSoapTitulus.php');
+// Con WSDL_CACHE_MEMORY il WSDL rpc/encoded di Titulus4 corrompe la richiesta e manda in segfault PHP-FPM (provato con PHP 8.2 e 8.4).
+prova(preg_match('/=>\s*WSDL_CACHE_MEMORY/', $sorgenteSoap) !== 1, 'client SOAP: mai WSDL_CACHE_MEMORY (segfault di PHP con il WSDL di Titulus)');
+
 echo "\n$ok prove riuscite, $ko fallite.\n";
 exit($ko > 0 ? 1 : 0);
