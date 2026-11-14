@@ -104,6 +104,7 @@ final class ServizioTitulus
                 'cod_titolario' => $p->codTitolario,
                 'classif' => '',
                 'rpa_nome' => $p->rpaNome,
+                'rpa_matricola' => $p->rpaMatricola,
                 'uo' => $p->uo,
                 'uo_nome' => $p->nomeUfficio(),
                 'op' => $p->op !== null && ($p->op['uo'] ?? '') !== '' ? $this->conNomeUfficio($p->op) : null,

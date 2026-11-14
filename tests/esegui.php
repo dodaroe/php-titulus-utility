@@ -123,6 +123,22 @@ prova($dom->loadXML($x) !== false, 'XML del documento ben formato anche con &, <
 prova($dom->documentElement->getAttribute('tipo') === 'arrivo' && $dom->documentElement->getAttribute('cod_amm_aoo') === 'UCALPRG', 'attributi tipo e AOO');
 prova($dom->getElementsByTagName('oggetto')->item(0)->textContent === 'R&D <test> "uno"', 'l\'oggetto resta identico dopo la protezione');
 prova($dom->getElementsByTagName('rif_esterno')->length === 1 && $dom->getElementsByTagName('minuta')->length === 0, 'arrivo: un rif_esterno e nessuna minuta');
+$rpaSenza = null;
+foreach ($dom->getElementsByTagName('rif_interno') as $r) {
+    if ($r->getAttribute('diritto') === 'RPA') {
+        $rpaSenza = $r;
+    }
+}
+prova($rpaSenza !== null && !$rpaSenza->hasAttribute('cod_persona') && $rpaSenza->getAttribute('nome_persona') === 'Mario Rossi', 'RPA senza matricola: nome, ufficio e nessun cod_persona');
+$domM = new DOMDocument();
+$domM->loadXML($g->documento(['rpa_matricola' => '12734'] + $base));
+$rpaCon = null;
+foreach ($domM->getElementsByTagName('rif_interno') as $r) {
+    if ($r->getAttribute('diritto') === 'RPA') {
+        $rpaCon = $r;
+    }
+}
+prova($rpaCon !== null && $rpaCon->getAttribute('cod_persona') === '12734' && $rpaCon->getAttribute('nome_persona') === 'Mario Rossi', 'RPA con matricola: porta anche cod_persona');
 $xi = $g->documento(['tipo' => 'interno', 'mittente_interno' => ['nome' => 'M', 'uff_nome' => 'U', 'uff_cod' => '1']] + $base);
 $domi = new DOMDocument();
 $domi->loadXML($xi);

@@ -19,7 +19,7 @@ final class GeneratoreXml
      * @param array{
      *   tipo: string, bozza: bool, aoo: string, autore: string, oggetto: string, num_allegati: int,
      *   cod_repertorio?: string|null, voce_indice?: string|null, cod_titolario: string, classif?: string,
-     *   rpa_nome: string, uo_nome: string, uo: string,
+     *   rpa_nome: string, rpa_matricola?: string, uo_nome: string, uo: string,
      *   op?: array{uo: string, nome: string, uo_nome: string, matricola: string}|null,
      *   cc?: list<array{uo: string, nome: string, uo_nome: string, matricola: string}>,
      *   esterno?: array{nome: string, codice_fiscale: string, email: string, telefono: string, fax: string, indirizzo: string},
@@ -69,7 +69,7 @@ final class GeneratoreXml
         $doc->appendChild(self::nodo($x, 'allegato', (string) $d['num_allegati']));
 
         $rifs = $x->createElement('rif_interni');
-        $rifs->appendChild($this->rifInterno($x, 'RPA', $d['uo'], $d['rpa_nome'], $d['uo_nome'], ''));
+        $rifs->appendChild($this->rifInterno($x, 'RPA', $d['uo'], $d['rpa_nome'], $d['uo_nome'], (string) ($d['rpa_matricola'] ?? '')));
         if (!empty($d['op'])) {
             $rifs->appendChild($this->rifInterno($x, 'OP', $d['op']['uo'], $d['op']['nome'], $d['op']['uo_nome'], $d['op']['matricola']));
         }
